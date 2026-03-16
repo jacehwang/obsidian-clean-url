@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "skills": {
+    "address-findings": {
+      "source": "jacehwang/harness",
+      "sourceType": "github",
+      "computedHash": "170f4cc8e993e68ba442c4891234084c3db4ce606e0c2f6bad20cf91a5f7b0b0"
+    },
+    "code-review": {
+      "source": "jacehwang/harness",
+      "sourceType": "github",
+      "computedHash": "fff2348c1d073c281e61727e24fed2dc64a0aa311630f3625e027b64a61c88df"
+    },
+    "commit": {
+      "source": "jacehwang/harness",
+      "sourceType": "github",
+      "computedHash": "dd1a237c018bad2078793c8507efea580c289292d8baa6e0de81369bb4dda67c"
+    },
+    "explore-test": {
+      "source": "jacehwang/harness",
+      "sourceType": "github",
+      "computedHash": "6e16c22ddd52b04853463c9ea41f2d792d03f427f019cedbdd747cc781d72864"
+    }
+  }
+}

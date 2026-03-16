@@ -6,6 +6,11 @@ describe("cleanUrl", () => {
 		expect(cleanUrl("https://example.com?utm_source=newsletter&fbclid=abc123")).toBe("https://example.com");
 	});
 
+	test("removes mixed-case tracking parameters while preserving an explicit root slash", () => {
+		expect(cleanUrl("https://example.com/?UTM_Source=newsletter&FBCLID=abc123&page=1")).toBe("https://example.com/?page=1");
+		expect(cleanUrl("https://example.com?UTM_Source=newsletter&FBCLID=abc123&page=1")).toBe("https://example.com?page=1");
+	});
+
 	test("preserves non-tracking parameters and fragments", () => {
 		expect(cleanUrl("https://example.com/docs?page=2&utm_medium=email#section-3")).toBe("https://example.com/docs?page=2#section-3");
 	});
@@ -39,6 +44,15 @@ describe("cleanUrl", () => {
 		expect(cleanUrl("https://example.com/docs?utm_campaign=launch#summary", {
 			preserveHash: false,
 		})).toBe("https://example.com/docs");
+	});
+
+	test("treats fragment content as non-query text unless hash preservation is disabled", () => {
+		const input = "https://example.com/docs?page=1#section&utm_source=newsletter";
+
+		expect(cleanUrl(input)).toBe(input);
+		expect(cleanUrl(input, {
+			preserveHash: false,
+		})).toBe("https://example.com/docs?page=1");
 	});
 
 	test("leaves invalid URLs untouched", () => {

@@ -30,6 +30,13 @@ describe("replaceUrlsInText", () => {
 		expect(replaceUrlsInText(input)).toBe(expected);
 	});
 
+	test("preserves a trailing closing bracket around a raw URL", () => {
+		const input = "See [https://example.com/path?utm_source=newsletter].";
+		const expected = "See [https://example.com/path].";
+
+		expect(replaceUrlsInText(input)).toBe(expected);
+	});
+
 	test("respects preserved tracking parameters in replacement options", () => {
 		const input = "Visit https://example.com/path?utm_source=newsletter&utm_medium=email.";
 		const expected = "Visit https://example.com/path?utm_source=newsletter.";
@@ -42,6 +49,13 @@ describe("replaceUrlsInText", () => {
 	test("keeps balanced parentheses that are part of the URL", () => {
 		const input = "Reference https://example.com/Function_(mathematics)?utm_source=wiki).";
 		const expected = "Reference https://example.com/Function_(mathematics)).";
+
+		expect(replaceUrlsInText(input)).toBe(expected);
+	});
+
+	test("preserves stacked trailing delimiters around a raw URL", () => {
+		const input = "Wrap (https://example.com/path?utm_source=x)., next";
+		const expected = "Wrap (https://example.com/path)., next";
 
 		expect(replaceUrlsInText(input)).toBe(expected);
 	});

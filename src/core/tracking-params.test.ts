@@ -40,6 +40,22 @@ describe("tracking parameter helpers", () => {
 		)).toBe(false);
 	});
 
+	test("prioritizes an exact preserve rule over a wildcard removal rule", () => {
+		const extraTrackingParams = createTrackingParamSet(["campaign_*"]);
+		const preservedTrackingParams = createTrackingParamSet(["campaign_source"]);
+
+		expect(shouldRemoveTrackingParam(
+			"campaign_source",
+			extraTrackingParams,
+			preservedTrackingParams,
+		)).toBe(false);
+		expect(shouldRemoveTrackingParam(
+			"campaign_id",
+			extraTrackingParams,
+			preservedTrackingParams,
+		)).toBe(true);
+	});
+
 	test("reuses a precomputed set without rebuilding it", () => {
 		const preserved = new Set(["utm_source"]);
 		expect(createTrackingParamSet(preserved)).toBe(preserved);

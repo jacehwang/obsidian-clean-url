@@ -16,6 +16,13 @@ describe("cleanUrl", () => {
 		})).toBe("https://example.com/article?page=1");
 	});
 
+	test("preserves parameters listed in the denylist even when they match removal rules", () => {
+		expect(cleanUrl("https://example.com/article?utm_source=newsletter&ref=feed&page=1", {
+			extraTrackingParams: ["ref"],
+			preservedTrackingParams: ["utm_source", "ref"],
+		})).toBe("https://example.com/article?utm_source=newsletter&ref=feed&page=1");
+	});
+
 	test("can drop fragments when configured", () => {
 		expect(cleanUrl("https://example.com/docs?utm_campaign=launch#summary", {
 			preserveHash: false,

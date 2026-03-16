@@ -20,6 +20,7 @@ export default class CleanUrlPlugin extends Plugin {
 			...DEFAULT_SETTINGS,
 			...loaded,
 			extraTrackingParams: normalizeTrackingParams(loaded?.extraTrackingParams ?? DEFAULT_SETTINGS.extraTrackingParams),
+			preservedTrackingParams: normalizeTrackingParams(loaded?.preservedTrackingParams ?? DEFAULT_SETTINGS.preservedTrackingParams),
 		};
 	}
 
@@ -27,6 +28,7 @@ export default class CleanUrlPlugin extends Plugin {
 		this.settings = {
 			...this.settings,
 			extraTrackingParams: normalizeTrackingParams(this.settings.extraTrackingParams),
+			preservedTrackingParams: normalizeTrackingParams(this.settings.preservedTrackingParams),
 		};
 		await this.saveData(this.settings);
 	}

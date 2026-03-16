@@ -30,6 +30,15 @@ describe("replaceUrlsInText", () => {
 		expect(replaceUrlsInText(input)).toBe(expected);
 	});
 
+	test("respects preserved tracking parameters in replacement options", () => {
+		const input = "Visit https://example.com/path?utm_source=newsletter&utm_medium=email.";
+		const expected = "Visit https://example.com/path?utm_source=newsletter.";
+
+		expect(replaceUrlsInText(input, {
+			preservedTrackingParams: ["utm_source"],
+		})).toBe(expected);
+	});
+
 	test("keeps balanced parentheses that are part of the URL", () => {
 		const input = "Reference https://example.com/Function_(mathematics)?utm_source=wiki).";
 		const expected = "Reference https://example.com/Function_(mathematics)).";

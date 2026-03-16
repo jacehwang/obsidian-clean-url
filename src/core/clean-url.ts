@@ -1,16 +1,14 @@
-import { isTrackingParam } from "./tracking-params";
-import type { CleanUrlOptions } from "./types";
+import { createTrackingParamSet, shouldRemoveTrackingParam } from "./tracking-params";
+import type { CleanUrlOptionInput, CleanUrlOptions } from "./types";
 
 const DEFAULT_OPTIONS: CleanUrlOptions = {
 	preserveHash: true,
-	extraTrackingParams: [],
+	extraTrackingParams: new Set(),
+	preservedTrackingParams: new Set(),
 };
 
-export function cleanUrl(input: string, options: Partial<CleanUrlOptions> = {}): string {
-	const resolvedOptions = {
-		...DEFAULT_OPTIONS,
-		...options,
-	};
+export function cleanUrl(input: string, options: CleanUrlOptionInput = {}): string {
+	const resolvedOptions = resolveCleanUrlOptions(options);
 
 	let url: URL;
 	try {
@@ -21,7 +19,11 @@ export function cleanUrl(input: string, options: Partial<CleanUrlOptions> = {}):
 
 	const paramsToRemove = new Set<string>();
 	for (const [name] of url.searchParams) {
-		if (isTrackingParam(name, resolvedOptions.extraTrackingParams)) {
+		if (shouldRemoveTrackingParam(
+			name,
+			resolvedOptions.extraTrackingParams,
+			resolvedOptions.preservedTrackingParams,
+		)) {
 			paramsToRemove.add(name);
 		}
 	}
@@ -39,6 +41,14 @@ export function cleanUrl(input: string, options: Partial<CleanUrlOptions> = {}):
 	}
 
 	return formatCleanedUrl(url, input);
+}
+
+function resolveCleanUrlOptions(options: CleanUrlOptionInput): CleanUrlOptions {
+	return {
+		preserveHash: options.preserveHash ?? DEFAULT_OPTIONS.preserveHash,
+		extraTrackingParams: createTrackingParamSet(options.extraTrackingParams),
+		preservedTrackingParams: createTrackingParamSet(options.preservedTrackingParams),
+	};
 }
 
 function formatCleanedUrl(url: URL, original: string): string {

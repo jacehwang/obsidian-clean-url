@@ -1,10 +1,10 @@
 import { cleanUrl } from "./clean-url";
-import type { CleanUrlOptions } from "./types";
+import type { CleanUrlOptionInput } from "./types";
 
 const URL_PATTERN = /https?:\/\/[^\s<>"']+/gi;
 const SIMPLE_TRAILING_PUNCTUATION = new Set([".", ",", "!", "?", ";", ":", "'", "\""]);
 
-export function replaceUrlsInText(text: string, options: Partial<CleanUrlOptions> = {}): string {
+export function replaceUrlsInText(text: string, options: CleanUrlOptionInput = {}): string {
 	return text.replace(URL_PATTERN, (match) => {
 		const { url, trailing } = splitTrailingDelimiters(match);
 		return `${cleanUrl(url, options)}${trailing}`;

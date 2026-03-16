@@ -1,5 +1,5 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import { normalizeTrackingParams, parseTrackingParamsInput } from "./core/tracking-params";
+import { createTrackingParamSet, parseTrackingParamsInput } from "./core/tracking-params";
 import type { CleanUrlOptions } from "./core/types";
 import type CleanUrlPlugin from "./main";
 
@@ -7,18 +7,21 @@ export interface CleanUrlPluginSettings {
 	enablePasteCleaning: boolean;
 	preserveHash: boolean;
 	extraTrackingParams: string[];
+	preservedTrackingParams: string[];
 }
 
 export const DEFAULT_SETTINGS: CleanUrlPluginSettings = {
 	enablePasteCleaning: true,
 	preserveHash: true,
 	extraTrackingParams: [],
+	preservedTrackingParams: [],
 };
 
 export function toCleanUrlOptions(settings: CleanUrlPluginSettings): CleanUrlOptions {
 	return {
 		preserveHash: settings.preserveHash,
-		extraTrackingParams: normalizeTrackingParams(settings.extraTrackingParams),
+		extraTrackingParams: createTrackingParamSet(settings.extraTrackingParams),
+		preservedTrackingParams: createTrackingParamSet(settings.preservedTrackingParams),
 	};
 }
 
@@ -55,13 +58,24 @@ export class CleanUrlSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName("Extra tracking parameters")
-			.setDesc("Add one parameter name per line, or separate names with commas or spaces.")
+			.setName("Extra parameters to remove")
+			.setDesc("Always remove these parameter names. Add one per line, or separate names with commas or spaces.")
 			.addTextArea((textArea) => textArea
 				.setPlaceholder("Parameter names")
 				.setValue(this.plugin.settings.extraTrackingParams.join("\n"))
 				.onChange(async (value) => {
 					this.plugin.settings.extraTrackingParams = parseTrackingParamsInput(value);
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName("Never remove parameters")
+			.setDesc("Keep these parameter names, even when they match the built-in or extra removal lists.")
+			.addTextArea((textArea) => textArea
+				.setPlaceholder("Parameter names")
+				.setValue(this.plugin.settings.preservedTrackingParams.join("\n"))
+				.onChange(async (value) => {
+					this.plugin.settings.preservedTrackingParams = parseTrackingParamsInput(value);
 					await this.plugin.saveSettings();
 				}));
 	}

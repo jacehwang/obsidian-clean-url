@@ -18,13 +18,29 @@ export function normalizeTrackingParams(params: Iterable<string>): string[] {
 	));
 }
 
+export function createTrackingParamSet(params: Iterable<string> = []): ReadonlySet<string> {
+	if (params instanceof Set) {
+		return params;
+	}
+
+	return new Set(normalizeTrackingParams(params));
+}
+
 export function parseTrackingParamsInput(input: string): string[] {
 	return normalizeTrackingParams(input.split(/[\s,]+/));
 }
 
-export function isTrackingParam(paramName: string, extraTrackingParams: Iterable<string> = []): boolean {
+export function shouldRemoveTrackingParam(
+	paramName: string,
+	extraTrackingParams: ReadonlySet<string> = new Set(),
+	preservedTrackingParams: ReadonlySet<string> = new Set(),
+): boolean {
 	const normalized = normalizeTrackingParam(paramName);
 	if (!normalized) {
+		return false;
+	}
+
+	if (preservedTrackingParams.has(normalized)) {
 		return false;
 	}
 
@@ -36,8 +52,7 @@ export function isTrackingParam(paramName: string, extraTrackingParams: Iterable
 		return true;
 	}
 
-	const normalizedExtras = new Set(normalizeTrackingParams(extraTrackingParams));
-	return normalizedExtras.has(normalized);
+	return extraTrackingParams.has(normalized);
 }
 
 function normalizeTrackingParam(param: string): string {

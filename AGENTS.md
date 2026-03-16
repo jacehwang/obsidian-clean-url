@@ -2,12 +2,20 @@
 
 ## Project summary
 
-- This repository is an Obsidian community plugin with plugin ID `obsidian-clean-url`.
+- This repository is an Obsidian community plugin with plugin ID `clean-url`.
 - Purpose: clean pasted URLs by removing known tracking parameters while preserving surrounding Markdown text.
 - Current release target: `main.js` and `manifest.json` at the plugin root.
 - Current license: `MIT`.
 - This repository lives directly under a vault plugin directory for local testing:
   - `<Vault>/.obsidian/plugins/obsidian-clean-url/`
+
+Submission metadata rules:
+
+- `manifest.json` must include the required `author` field.
+- Keep `manifest.json` `id` as `clean-url`.
+- Do not include `obsidian` in the plugin ID.
+- Keep `manifest.json` and `package.json` versions aligned.
+- Keep README user-facing and submission-ready, including clear usage and disclosure notes.
 
 ## Tooling and environment
 
@@ -177,6 +185,11 @@ Because this repo is already inside the vault plugin directory, local testing is
 3. Enable **Clean URL** in **Settings → Community plugins**
 4. Reload Obsidian after source changes
 5. Paste test content into a Markdown editor
+
+Note:
+
+- For community submission, the released plugin ID remains `clean-url`.
+- The local development folder may differ, but Obsidian docs recommend matching the installed folder name to the plugin ID for the most reliable behavior.
 
 Release artifacts must still be the root-level:
 

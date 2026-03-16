@@ -19,6 +19,21 @@ Clean URL removes known tracking parameters from URLs when you paste text into a
 | `instagram.com` | `igsh`, `igshid` |
 | `youtube.com`, `youtu.be` | `si` |
 
+## Usage
+
+- Paste text that contains one or more `http` or `https` links into the editor.
+- The plugin removes supported tracking parameters from each detected link.
+- Use the `Clean selected links` command to clean URLs inside the current selection.
+- Use `Parameters to keep` if you want to preserve a parameter even when it matches a built-in or custom removal rule.
+
+## Privacy and disclosures
+
+- No network requests or external services are used.
+- No accounts, subscriptions, payments, or ads are required.
+- No telemetry or analytics are collected.
+- URL cleaning runs locally on pasted text and command selections.
+- The plugin does not access files outside your vault.
+
 ## Development
 
 This plugin uses Bun for package management, script execution, and tests.

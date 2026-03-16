@@ -1,6 +1,6 @@
 {
   "name": "obsidian-clean-url",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Clean tracking parameters from pasted URLs in Obsidian.",
   "main": "main.js",
   "type": "module",

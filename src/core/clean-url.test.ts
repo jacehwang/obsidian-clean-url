@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cleanUrl } from "../src/core/clean-url";
+import { cleanUrl } from "./clean-url";
 
 describe("cleanUrl", () => {
 	test("removes known tracking parameters from a bare origin", () => {

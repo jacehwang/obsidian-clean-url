@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { replaceUrlsInText } from "../src/core/replace-urls-in-text";
+import { replaceUrlsInText } from "./replace-urls-in-text";
 
 describe("replaceUrlsInText", () => {
 	test("cleans multiple URLs inside pasted text", () => {

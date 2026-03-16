@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { createTrackingParamSet, parseTrackingParamsInput, shouldRemoveTrackingParam } from "../src/core/tracking-params";
+import { createTrackingParamSet, parseTrackingParamsInput, shouldRemoveTrackingParam } from "./tracking-params";
 
 describe("tracking parameter helpers", () => {
 	test("parses textarea input with whitespace, commas, and duplicate names", () => {

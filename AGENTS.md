@@ -46,15 +46,14 @@ src/
     register-commands.ts
   core/
     clean-url.ts
+    clean-url.test.ts
     replace-urls-in-text.ts
+    replace-urls-in-text.test.ts
     tracking-params.ts
+    tracking-params.test.ts
     types.ts
   editor/
     register-paste-handler.ts
-
-test/
-  clean-url.test.ts
-  replace-urls-in-text.test.ts
 ```
 
 Responsibilities:
@@ -182,8 +181,7 @@ This project does not use `styles.css`. Do not reintroduce it unless the plugin 
 
 ## Lint and test caveats
 
-- ESLint is intentionally configured to ignore `test/` for type-aware linting simplicity.
-- Tests are still required and live under `test/`.
+- Keep tests next to the source files they cover, using `*.test.ts`.
 - If you change lint configuration, make sure `bun run lint` remains green without weakening useful project rules.
 
 ## Versioning and release notes

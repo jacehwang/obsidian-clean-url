@@ -1,10 +1,10 @@
 {
-  "id": "clean-url",
-  "name": "Clean URL",
-  "author": "Jace Hwang",
-  "authorUrl": "https://jacehwang.com",
-  "version": "0.1.1",
-  "minAppVersion": "1.1.0",
-  "description": "Clean tracking parameters from pasted URLs while preserving your Markdown syntax.",
-  "isDesktopOnly": false
+	"id": "clean-url",
+	"name": "Clean URL",
+	"author": "Jace Hwang",
+	"authorUrl": "https://jacehwang.com",
+	"version": "0.1.2",
+	"minAppVersion": "1.1.0",
+	"description": "Clean tracking parameters from pasted URLs while preserving your Markdown syntax.",
+	"isDesktopOnly": false
 }

@@ -5,7 +5,7 @@ import { toCleanUrlOptions } from "../settings";
 
 export function registerCommands(plugin: CleanUrlPlugin): void {
   plugin.addCommand({
-    id: "clean-urls-in-selection",
+    id: "selection",
     name: "Clean selected links",
     editorCheckCallback: (checking, editor) => {
       const selection = editor.getSelection();

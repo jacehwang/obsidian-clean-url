@@ -6,6 +6,8 @@ import {
 import type { CleanUrlOptions } from "./core/types";
 import type CleanUrlPlugin from "./main";
 
+const ISSUES_URL = "https://github.com/jacehwang/obsidian-clean-url/issues";
+
 export interface CleanUrlPluginSettings {
 	enablePasteCleaning: boolean;
 	preserveHash: boolean;
@@ -63,7 +65,7 @@ export class CleanUrlSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Preserve fragment")
 			.setDesc(
-				"Keep the # fragment portion of links (e.g., page.html#introduction). Turn this off to strip it.",
+				"Keep the #fragment portion of links (e.g., page.html#introduction). Turn this off to remove it.",
 			)
 			.addToggle((toggle) =>
 				toggle
@@ -96,7 +98,7 @@ export class CleanUrlSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Parameters to keep")
 			.setDesc(
-				"Prevent specific parameters from being removed, even if they match the built-in or additional removal list. Supports trailing wildcards (e.g., mc_*). One per line, or separate with commas.",
+				"Prevent specific parameters from being removed, even if they match a built-in or custom removal rule. Supports trailing wildcards (e.g., mc_*). One per line, or separate with commas.",
 			)
 			.addTextArea((textArea) =>
 				textArea
@@ -111,5 +113,24 @@ export class CleanUrlSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					}),
 			);
+
+		new Setting(containerEl)
+			.setName("Feedback")
+			.setDesc(createFeedbackDescription());
 	}
+}
+
+function createFeedbackDescription(): DocumentFragment {
+	const fragment = document.createDocumentFragment();
+	fragment.append("Found a bug or have an idea? ");
+
+	const link = document.createElement("a");
+	link.href = ISSUES_URL;
+	link.target = "_blank";
+	link.rel = "noopener noreferrer";
+	link.textContent = "Open a GitHub issue";
+	fragment.append(link);
+
+	fragment.append(" and include an example link if possible.");
+	return fragment;
 }

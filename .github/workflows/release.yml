@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -36,7 +36,7 @@ jobs:
           bun-version: 1.2.21
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
 
@@ -209,12 +209,21 @@ jobs:
         run: git push origin HEAD:main "${VERSION}"
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v2.6.1
-        with:
-          tag_name: ${{ steps.version.outputs.version }}
-          name: ${{ steps.version.outputs.version }}
-          body_path: RELEASE_NOTES.md
-          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
-          files: |
-            main.js
-            manifest.json
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if [[ "${VERSION}" == *-* ]]; then
+            gh release create "${VERSION}" \
+              main.js \
+              manifest.json \
+              --title "${VERSION}" \
+              --notes-file RELEASE_NOTES.md \
+              --prerelease
+          else
+            gh release create "${VERSION}" \
+              main.js \
+              manifest.json \
+              --title "${VERSION}" \
+              --notes-file RELEASE_NOTES.md
+          fi

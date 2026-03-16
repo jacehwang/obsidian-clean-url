@@ -159,7 +159,7 @@ Important manual checks in Obsidian:
 - verify already clean text remains unchanged
 - verify invalid URL-like text remains unchanged
 - verify `Clean selected links` command works on selected text
-- verify `Preserve fragments` setting changes behavior as expected
+- verify `Preserve fragment` setting changes behavior as expected
 - verify disabling automatic paste cleaning stops paste interception
 
 ## Local manual testing

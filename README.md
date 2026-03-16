@@ -35,7 +35,7 @@ This repository lives inside the target vault's plugin directory, so `bun run de
 2. Reload Obsidian
 3. Enable **Clean URL** in **Settings → Community plugins**
 4. Paste text that contains URLs with `utm_*` or other supported tracking parameters
-5. Verify `Never remove parameters` keeps selected names even when they match built-in or extra removal rules
+5. Verify `Parameters to keep` keeps selected names even when they match built-in or extra removal rules
 
 ## Release
 

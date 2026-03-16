@@ -39,7 +39,7 @@ export class CleanUrlSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Clean pasted links automatically")
-			.setDesc("Scan pasted text and remove known tracking parameters from every supported link.")
+			.setDesc("When you paste text containing links, tracking parameters like utm_source and fbclid are removed.")
 			.addToggle((toggle) => toggle
 				.setValue(this.plugin.settings.enablePasteCleaning)
 				.onChange(async (value) => {
@@ -48,8 +48,8 @@ export class CleanUrlSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName("Preserve fragments")
-			.setDesc("Keep the part of the URL after '#'.")
+			.setName("Preserve fragment")
+			.setDesc("Keep the # fragment portion of links (e.g., page.html#introduction). Turn this off to strip it.")
 			.addToggle((toggle) => toggle
 				.setValue(this.plugin.settings.preserveHash)
 				.onChange(async (value) => {
@@ -58,10 +58,10 @@ export class CleanUrlSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName("Extra parameters to remove")
-			.setDesc("Always remove these parameter names. Add one per line, or separate names with commas or spaces.")
+			.setName("Additional parameters to remove")
+			.setDesc("Add custom parameter names to remove from links, beyond the built-in list (utm_*, fbclid, gclid, etc.). One per line, or separate with commas.")
 			.addTextArea((textArea) => textArea
-				.setPlaceholder("Parameter names")
+				.setPlaceholder("ref\nsource")
 				.setValue(this.plugin.settings.extraTrackingParams.join("\n"))
 				.onChange(async (value) => {
 					this.plugin.settings.extraTrackingParams = parseTrackingParamsInput(value);
@@ -69,10 +69,10 @@ export class CleanUrlSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName("Never remove parameters")
-			.setDesc("Keep these parameter names, even when they match the built-in or extra removal lists.")
+			.setName("Parameters to keep")
+			.setDesc("Keep specific parameters from being removed, even if they match the built-in or additional removal list. One per line, or separate with commas.")
 			.addTextArea((textArea) => textArea
-				.setPlaceholder("Parameter names")
+				.setPlaceholder("mc_cid")
 				.setValue(this.plugin.settings.preservedTrackingParams.join("\n"))
 				.onChange(async (value) => {
 					this.plugin.settings.preservedTrackingParams = parseTrackingParamsInput(value);

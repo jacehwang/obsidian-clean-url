@@ -3,10 +3,11 @@ import { createTrackingParamSet, parseTrackingParamsInput, shouldRemoveTrackingP
 
 describe("tracking parameter helpers", () => {
 	test("parses textarea input with whitespace, commas, and duplicate names", () => {
-		expect(parseTrackingParamsInput(" UTM_Source,\nref  ref\tFBCLID ")).toEqual([
+		expect(parseTrackingParamsInput(" UTM_Source,\nref  ref\tFBCLID utm_* ")).toEqual([
 			"utm_source",
 			"ref",
 			"fbclid",
+			"utm_*",
 		]);
 	});
 
@@ -20,6 +21,22 @@ describe("tracking parameter helpers", () => {
 			"ref",
 			createTrackingParamSet(["ref"]),
 			createTrackingParamSet(["ref"]),
+		)).toBe(false);
+	});
+
+	test("removes parameters matching a custom wildcard pattern", () => {
+		expect(shouldRemoveTrackingParam(
+			"campaign_source",
+			createTrackingParamSet(["campaign_*"]),
+			createTrackingParamSet(),
+		)).toBe(true);
+	});
+
+	test("does not remove parameters preserved by a wildcard pattern", () => {
+		expect(shouldRemoveTrackingParam(
+			"utm_medium",
+			createTrackingParamSet(["ref"]),
+			createTrackingParamSet(["utm_*"]),
 		)).toBe(false);
 	});
 

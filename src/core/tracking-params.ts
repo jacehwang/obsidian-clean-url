@@ -40,7 +40,7 @@ export function shouldRemoveTrackingParam(
 		return false;
 	}
 
-	if (preservedTrackingParams.has(normalized)) {
+	if (matchesTrackingParamPattern(normalized, preservedTrackingParams)) {
 		return false;
 	}
 
@@ -52,9 +52,28 @@ export function shouldRemoveTrackingParam(
 		return true;
 	}
 
-	return extraTrackingParams.has(normalized);
+	return matchesTrackingParamPattern(normalized, extraTrackingParams);
 }
 
 function normalizeTrackingParam(param: string): string {
 	return param.trim().toLowerCase();
+}
+
+function matchesTrackingParamPattern(paramName: string, patterns: ReadonlySet<string>): boolean {
+	for (const pattern of patterns) {
+		if (pattern.endsWith("*")) {
+			const prefix = pattern.slice(0, -1);
+			if (paramName.startsWith(prefix)) {
+				return true;
+			}
+
+			continue;
+		}
+
+		if (paramName === pattern) {
+			return true;
+		}
+	}
+
+	return false;
 }

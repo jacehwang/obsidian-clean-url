@@ -16,11 +16,23 @@ describe("cleanUrl", () => {
 		})).toBe("https://example.com/article?page=1");
 	});
 
+	test("supports wildcard extra tracking parameters from settings", () => {
+		expect(cleanUrl("https://example.com/article?campaign_id=42&campaign_source=newsletter&page=1", {
+			extraTrackingParams: ["campaign_*"],
+		})).toBe("https://example.com/article?page=1");
+	});
+
 	test("preserves parameters listed in the denylist even when they match removal rules", () => {
 		expect(cleanUrl("https://example.com/article?utm_source=newsletter&ref=feed&page=1", {
 			extraTrackingParams: ["ref"],
 			preservedTrackingParams: ["utm_source", "ref"],
 		})).toBe("https://example.com/article?utm_source=newsletter&ref=feed&page=1");
+	});
+
+	test("preserves parameters matched by a wildcard keep rule", () => {
+		expect(cleanUrl("https://example.com/article?utm_source=newsletter&utm_medium=email&page=1", {
+			preservedTrackingParams: ["utm_*"],
+		})).toBe("https://example.com/article?utm_source=newsletter&utm_medium=email&page=1");
 	});
 
 	test("can drop fragments when configured", () => {

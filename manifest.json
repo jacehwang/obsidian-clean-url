@@ -1,8 +1,8 @@
 {
-  "id": "obsidian-clean-url",
-  "name": "Clean URL",
-  "version": "0.0.1",
-  "minAppVersion": "1.1.0",
-  "description": "Clean tracking parameters from pasted URLs while preserving your Markdown.",
-  "isDesktopOnly": false
+	"id": "obsidian-clean-url",
+	"name": "Clean URL",
+	"version": "0.1.0",
+	"minAppVersion": "1.1.0",
+	"description": "Clean tracking parameters from pasted URLs while preserving your Markdown.",
+	"isDesktopOnly": false
 }

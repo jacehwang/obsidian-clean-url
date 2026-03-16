@@ -110,8 +110,10 @@ Current built-in removals:
 - `dclid`
 - `mc_cid`
 - `mc_eid`
-- `igshid`
 - `mkt_tok`
+- `igsh` on `instagram.com`
+- `igshid` on `instagram.com`
+- `si` on `youtube.com` and `youtu.be`
 
 User-configurable extra parameter names are supported via settings.
 User-configurable preserved parameter names are also supported via settings.

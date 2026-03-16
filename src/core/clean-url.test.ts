@@ -15,6 +15,15 @@ describe("cleanUrl", () => {
 		expect(cleanUrl("https://example.com/docs?page=2&utm_medium=email#section-3")).toBe("https://example.com/docs?page=2#section-3");
 	});
 
+	test("removes host-scoped built-in parameters on supported hosts only", () => {
+		expect(cleanUrl("https://www.youtube.com/watch?v=abc123&si=share-token")).toBe("https://www.youtube.com/watch?v=abc123");
+		expect(cleanUrl("https://youtu.be/abc123?si=share-token")).toBe("https://youtu.be/abc123");
+		expect(cleanUrl("https://www.instagram.com/reel/abc123/?igsh=share-token")).toBe("https://www.instagram.com/reel/abc123/");
+		expect(cleanUrl("https://www.instagram.com/p/abc123/?igshid=share-token")).toBe("https://www.instagram.com/p/abc123/");
+		expect(cleanUrl("https://example.com/watch?v=abc123&si=share-token")).toBe("https://example.com/watch?v=abc123&si=share-token");
+		expect(cleanUrl("https://example.com/p/abc123/?igshid=share-token")).toBe("https://example.com/p/abc123/?igshid=share-token");
+	});
+
 	test("supports extra tracking parameters from settings", () => {
 		expect(cleanUrl("https://example.com/article?ref=feed&page=1", {
 			extraTrackingParams: ["ref"],
@@ -38,6 +47,18 @@ describe("cleanUrl", () => {
 		expect(cleanUrl("https://example.com/article?utm_source=newsletter&utm_medium=email&page=1", {
 			preservedTrackingParams: ["utm_*"],
 		})).toBe("https://example.com/article?utm_source=newsletter&utm_medium=email&page=1");
+	});
+
+	test("preserves host-scoped built-in parameters when explicitly kept", () => {
+		expect(cleanUrl("https://www.youtube.com/watch?v=abc123&si=share-token", {
+			preservedTrackingParams: ["si"],
+		})).toBe("https://www.youtube.com/watch?v=abc123&si=share-token");
+		expect(cleanUrl("https://www.instagram.com/reel/abc123/?igsh=share-token", {
+			preservedTrackingParams: ["igsh"],
+		})).toBe("https://www.instagram.com/reel/abc123/?igsh=share-token");
+		expect(cleanUrl("https://www.instagram.com/p/abc123/?igshid=share-token", {
+			preservedTrackingParams: ["igshid"],
+		})).toBe("https://www.instagram.com/p/abc123/?igshid=share-token");
 	});
 
 	test("can drop fragments when configured", () => {

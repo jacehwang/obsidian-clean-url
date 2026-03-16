@@ -11,6 +11,14 @@ Clean URL removes known tracking parameters from URLs when you paste text into a
 - Applies preserve rules before built-in and custom removal rules
 - Provides a command to clean URLs in the current selection
 
+## Built-in tracking parameters
+
+| Scope | Parameters |
+| --- | --- |
+| All supported hosts | `utm_*`, `fbclid`, `gclid`, `dclid`, `mc_cid`, `mc_eid`, `mkt_tok` |
+| `instagram.com` | `igsh`, `igshid` |
+| `youtube.com`, `youtu.be` | `si` |
+
 ## Development
 
 This plugin uses Bun for package management, script execution, and tests.

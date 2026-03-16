@@ -23,6 +23,7 @@ export function cleanUrl(input: string, options: CleanUrlOptionInput = {}): stri
 			name,
 			resolvedOptions.extraTrackingParams,
 			resolvedOptions.preservedTrackingParams,
+			url.hostname,
 		)) {
 			paramsToRemove.add(name);
 		}

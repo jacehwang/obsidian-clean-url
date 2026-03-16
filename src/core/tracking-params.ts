@@ -8,8 +8,13 @@ const TRACKING_PARAM_NAMES = new Set([
 	"dclid",
 	"mc_cid",
 	"mc_eid",
-	"igshid",
 	"mkt_tok",
+]);
+
+const HOST_SCOPED_TRACKING_PARAM_NAMES = new Map<string, ReadonlySet<string>>([
+	["instagram.com", new Set(["igsh", "igshid"])],
+	["youtube.com", new Set(["si"])],
+	["youtu.be", new Set(["si"])],
 ]);
 
 export function normalizeTrackingParams(params: Iterable<string>): string[] {
@@ -34,6 +39,7 @@ export function shouldRemoveTrackingParam(
 	paramName: string,
 	extraTrackingParams: ReadonlySet<string> = new Set(),
 	preservedTrackingParams: ReadonlySet<string> = new Set(),
+	hostname?: string,
 ): boolean {
 	const normalized = normalizeTrackingParam(paramName);
 	if (!normalized) {
@@ -48,6 +54,10 @@ export function shouldRemoveTrackingParam(
 		return true;
 	}
 
+	if (matchesHostScopedTrackingParam(normalized, hostname)) {
+		return true;
+	}
+
 	if (TRACKING_PARAM_PREFIXES.some((prefix) => normalized.startsWith(prefix))) {
 		return true;
 	}
@@ -57,6 +67,33 @@ export function shouldRemoveTrackingParam(
 
 function normalizeTrackingParam(param: string): string {
 	return param.trim().toLowerCase();
+}
+
+function matchesHostScopedTrackingParam(paramName: string, hostname?: string): boolean {
+	if (!hostname) {
+		return false;
+	}
+
+	const normalizedHost = hostname.trim().toLowerCase();
+	if (!normalizedHost) {
+		return false;
+	}
+
+	for (const [domain, params] of HOST_SCOPED_TRACKING_PARAM_NAMES) {
+		if (!matchesHostname(normalizedHost, domain)) {
+			continue;
+		}
+
+		if (params.has(paramName)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function matchesHostname(hostname: string, domain: string): boolean {
+	return hostname === domain || hostname.endsWith(`.${domain}`);
 }
 
 function matchesTrackingParamPattern(paramName: string, patterns: ReadonlySet<string>): boolean {

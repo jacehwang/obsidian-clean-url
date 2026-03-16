@@ -46,6 +46,24 @@ describe("replaceUrlsInText", () => {
 		})).toBe(expected);
 	});
 
+	test("cleans host-scoped built-in parameters inside pasted text", () => {
+		const input = [
+			"Watch https://www.youtube.com/watch?v=abc123&si=share-token",
+			"Share https://www.instagram.com/reel/abc123/?igsh=share-token",
+			"Post https://www.instagram.com/p/abc123/?igshid=share-token",
+			"Keep https://example.com/watch?v=abc123&si=share-token",
+		].join("\n");
+
+		const expected = [
+			"Watch https://www.youtube.com/watch?v=abc123",
+			"Share https://www.instagram.com/reel/abc123/",
+			"Post https://www.instagram.com/p/abc123/",
+			"Keep https://example.com/watch?v=abc123&si=share-token",
+		].join("\n");
+
+		expect(replaceUrlsInText(input)).toBe(expected);
+	});
+
 	test("keeps balanced parentheses that are part of the URL", () => {
 		const input = "Reference https://example.com/Function_(mathematics)?utm_source=wiki).";
 		const expected = "Reference https://example.com/Function_(mathematics)).";

@@ -24,6 +24,51 @@ describe("tracking parameter helpers", () => {
 		)).toBe(false);
 	});
 
+	test("removes host-scoped built-in parameters only on supported hosts", () => {
+		expect(shouldRemoveTrackingParam(
+			"si",
+			createTrackingParamSet(),
+			createTrackingParamSet(),
+			"www.youtube.com",
+		)).toBe(true);
+		expect(shouldRemoveTrackingParam(
+			"si",
+			createTrackingParamSet(),
+			createTrackingParamSet(),
+			"youtu.be",
+		)).toBe(true);
+		expect(shouldRemoveTrackingParam(
+			"igsh",
+			createTrackingParamSet(),
+			createTrackingParamSet(),
+			"www.instagram.com",
+		)).toBe(true);
+		expect(shouldRemoveTrackingParam(
+			"igshid",
+			createTrackingParamSet(),
+			createTrackingParamSet(),
+			"www.instagram.com",
+		)).toBe(true);
+		expect(shouldRemoveTrackingParam(
+			"si",
+			createTrackingParamSet(),
+			createTrackingParamSet(),
+			"example.com",
+		)).toBe(false);
+		expect(shouldRemoveTrackingParam(
+			"igsh",
+			createTrackingParamSet(),
+			createTrackingParamSet(),
+			"example.com",
+		)).toBe(false);
+		expect(shouldRemoveTrackingParam(
+			"igshid",
+			createTrackingParamSet(),
+			createTrackingParamSet(),
+			"example.com",
+		)).toBe(false);
+	});
+
 	test("removes parameters matching a custom wildcard pattern", () => {
 		expect(shouldRemoveTrackingParam(
 			"campaign_source",
@@ -54,6 +99,27 @@ describe("tracking parameter helpers", () => {
 			extraTrackingParams,
 			preservedTrackingParams,
 		)).toBe(true);
+	});
+
+	test("prioritizes preserve rules over host-scoped built-in parameters", () => {
+		expect(shouldRemoveTrackingParam(
+			"si",
+			createTrackingParamSet(),
+			createTrackingParamSet(["si"]),
+			"youtube.com",
+		)).toBe(false);
+		expect(shouldRemoveTrackingParam(
+			"igsh",
+			createTrackingParamSet(),
+			createTrackingParamSet(["igsh"]),
+			"instagram.com",
+		)).toBe(false);
+		expect(shouldRemoveTrackingParam(
+			"igshid",
+			createTrackingParamSet(),
+			createTrackingParamSet(["igshid"]),
+			"instagram.com",
+		)).toBe(false);
 	});
 
 	test("reuses a precomputed set without rebuilding it", () => {

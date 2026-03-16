@@ -1,0 +1,220 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (patch, minor, major, premajor, preminor, prepatch, prerelease, or explicit like 1.2.3-beta.1)"
+        required: true
+        default: "patch"
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Release plugin
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure main branch
+        run: test "${GITHUB_REF_NAME}" = "main"
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.21
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Bump version
+        id: version
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+
+          const input = process.env.INPUT_VERSION.trim();
+          const pkgPath = "package.json";
+          const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+          const current = pkg.version;
+
+          function parseVersion(version) {
+            const match = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$/);
+            if (!match) {
+              throw new Error(`Unsupported version: ${version}`);
+            }
+
+            return {
+              major: Number(match[1]),
+              minor: Number(match[2]),
+              patch: Number(match[3]),
+              prerelease: match[4] ?? null,
+            };
+          }
+
+          function formatVersion(parts) {
+            const base = `${parts.major}.${parts.minor}.${parts.patch}`;
+            return parts.prerelease ? `${base}-${parts.prerelease}` : base;
+          }
+
+          function bumpPrereleaseToken(token) {
+            if (!token) {
+              return "0";
+            }
+
+            const segments = token.split(".");
+            const last = segments[segments.length - 1];
+            if (/^\d+$/.test(last)) {
+              segments[segments.length - 1] = String(Number(last) + 1);
+              return segments.join(".");
+            }
+
+            return `${token}.1`;
+          }
+
+          const parsed = parseVersion(current);
+          let next;
+
+          switch (input) {
+            case "patch":
+              next = { major: parsed.major, minor: parsed.minor, patch: parsed.patch + 1, prerelease: null };
+              break;
+            case "minor":
+              next = { major: parsed.major, minor: parsed.minor + 1, patch: 0, prerelease: null };
+              break;
+            case "major":
+              next = { major: parsed.major + 1, minor: 0, patch: 0, prerelease: null };
+              break;
+            case "prepatch":
+              next = { major: parsed.major, minor: parsed.minor, patch: parsed.patch + 1, prerelease: "0" };
+              break;
+            case "preminor":
+              next = { major: parsed.major, minor: parsed.minor + 1, patch: 0, prerelease: "0" };
+              break;
+            case "premajor":
+              next = { major: parsed.major + 1, minor: 0, patch: 0, prerelease: "0" };
+              break;
+            case "prerelease":
+              if (parsed.prerelease) {
+                next = {
+                  major: parsed.major,
+                  minor: parsed.minor,
+                  patch: parsed.patch,
+                  prerelease: bumpPrereleaseToken(parsed.prerelease),
+                };
+              } else {
+                next = { major: parsed.major, minor: parsed.minor, patch: parsed.patch + 1, prerelease: "0" };
+              }
+              break;
+            default:
+              next = parseVersion(input);
+              break;
+          }
+
+          const nextVersion = formatVersion(next);
+          if (nextVersion === current) {
+            throw new Error(`Version did not change: ${current}`);
+          }
+
+          pkg.version = nextVersion;
+          fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, "\t")}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `version=${nextVersion}\n`);
+          NODE
+
+      - name: Sync manifest and versions
+        run: bun run version
+
+      - name: Validate version state
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          test "${VERSION}" = "$(node -p "JSON.parse(require('fs').readFileSync('package.json', 'utf8')).version")"
+          test "${VERSION}" = "$(node -p "JSON.parse(require('fs').readFileSync('manifest.json', 'utf8')).version")"
+          node -e "const fs=require('fs'); const version=process.env.VERSION; const versions=JSON.parse(fs.readFileSync('versions.json','utf8')); if (!versions[version]) { console.error('Missing versions.json entry for', version); process.exit(1); }"
+          if git rev-parse "refs/tags/${VERSION}" >/dev/null 2>&1; then
+            echo "Tag ${VERSION} already exists"
+            exit 1
+          fi
+
+      - name: Generate changelog
+        id: changelog
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          PREVIOUS_TAG="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+
+          {
+            echo "## What's Changed"
+            if [ -n "${PREVIOUS_TAG}" ]; then
+              git log "${PREVIOUS_TAG}..HEAD" --pretty=format:'- %s (%h)' || true
+            else
+              git log --pretty=format:'- %s (%h)' || true
+            fi
+            echo
+            echo
+            if [ -n "${PREVIOUS_TAG}" ]; then
+              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREVIOUS_TAG}...${VERSION}"
+            else
+              echo "**Full history**: https://github.com/${{ github.repository }}/commits/${VERSION}"
+            fi
+          } > RELEASE_NOTES.md
+
+      - name: Run tests
+        run: bun test
+
+      - name: Run lint
+        run: bun run lint
+
+      - name: Build plugin
+        run: bun run build
+
+      - name: Commit release version
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          git add package.json manifest.json versions.json
+          git commit -m "Release ${VERSION}"
+
+      - name: Create tag
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: git tag "${VERSION}"
+
+      - name: Push release commit and tag
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: git push origin HEAD:main "${VERSION}"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2.6.1
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.version }}
+          body_path: RELEASE_NOTES.md
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
+          files: |
+            main.js
+            manifest.json

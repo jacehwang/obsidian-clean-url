@@ -8,6 +8,7 @@ Clean URL removes known tracking parameters from URLs when you paste text into a
 - Preserves non-URL text, Markdown links, autolinks, and fragments
 - Keeps the cleaning policy conservative by removing only known tracking parameters
 - Lets you add extra parameters to remove and parameters that should never be removed
+- Applies preserve rules before built-in and custom removal rules
 - Provides a command to clean URLs in the current selection
 
 ## Development
@@ -35,7 +36,8 @@ This repository lives inside the target vault's plugin directory, so `bun run de
 2. Reload Obsidian
 3. Enable **Clean URL** in **Settings → Community plugins**
 4. Paste text that contains URLs with `utm_*` or other supported tracking parameters
-5. Verify `Parameters to keep` keeps selected names even when they match built-in or extra removal rules
+5. Verify `Parameters to keep` preserves selected names even when they match built-in or extra removal rules
+6. Toggle `Preserve fragment` and confirm fragments are kept or removed as expected
 
 ## Release
 

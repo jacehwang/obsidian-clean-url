@@ -114,6 +114,8 @@ Current built-in removals:
 - `mkt_tok`
 
 User-configurable extra parameter names are supported via settings.
+User-configurable preserved parameter names are also supported via settings.
+Preserved parameter rules take precedence over built-in and extra removal rules.
 
 Do not add ambiguous parameters such as `ref`, `source`, or `si` to the built-in list without a deliberate product decision. The plugin currently prefers false negatives over breaking URLs.
 
@@ -133,6 +135,7 @@ Current settings:
 - `enablePasteCleaning`
 - `preserveHash`
 - `extraTrackingParams`
+- `preservedTrackingParams`
 
 UX constraints:
 
@@ -160,6 +163,7 @@ Important manual checks in Obsidian:
 - verify invalid URL-like text remains unchanged
 - verify `Clean selected links` command works on selected text
 - verify `Preserve fragment` setting changes behavior as expected
+- verify `Parameters to keep` preserves selected names even when they match built-in or extra removal rules
 - verify disabling automatic paste cleaning stops paste interception
 
 ## Local manual testing
